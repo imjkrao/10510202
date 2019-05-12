@@ -1,0 +1,120 @@
+############################1. Creating vectors
+
+print("i.")
+x=c(1,3,5,7,9)
+##data declared for x
+x
+#--------------------------#
+print("ii.")
+x1=vector(length = 5)
+x1[1]=1
+x1[2]=3
+x1[3]=5
+x1[4]=7
+x1[5]=9
+##data declared for x1
+x1
+#-----------------------------#
+
+print("iii.")
+x2=seq(from=1,to=9,by=2)
+##data declared for x2
+x2
+
+#---------------2. Manipulating vectors:-------------#
+print("(i)")
+## append 11,12,13,14 to x
+x=c(x,11,12,13,14)
+
+x
+
+#-----------------#
+
+print("(ii)")
+z=0
+z=which(x%%3==0)
+x=x[-z]
+
+#-----------------#
+
+print("(iii)")
+
+x=x*3
+
+
+#-----------------#
+
+
+print("(iv)")
+Z=6:5
+w=x+Z
+w
+Print("error was displayed as Z  was added to all elements of x")
+
+#-------#
+
+
+
+#------------3. Subset:------------#
+
+print("(i)")
+any(w<30)
+
+print("(ii)")
+subset(w, w%%3==0)
+
+print("(iii)")
+
+which(w>20)
+
+#---------4. Matrices:-------#
+print("(i)")
+
+M = matrix(1:12, 4, 3)
+
+print("(ii.a)")
+
+M[1,]
+
+print("(ii.b)")
+
+M[,2]
+
+print("(ii.c)")
+
+vec1=M[2:3,2]
+
+print("(iii)")
+
+Mean_vec1=mean(vec1)
+
+#---------5. The apply() function:-------#
+print("(i)")
+
+print(" What does the command apply(M, 1, sum) do?")
+
+apply(M, 1, sum)
+
+print ("adds row element of the matrix M ")
+
+
+print("(ii)")
+print("How do you get column sums of M using apply()?")
+apply(M, 2, sum)
+
+print("(iii)")
+print("Replace the value in the bottom right-hand corner of M with the value NA")
+M[4,3]=NA
+
+print("(iV)")
+apply(M, 1, sum)
+
+PRINT("ANSWER = [1] 15 18 21 NA ")
+
+print("iv")
+
+na.rm = TRUE
+
+apply(M, 1, sum, na.rm = TRUE )
+
+
