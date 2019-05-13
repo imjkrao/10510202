@@ -1,0 +1,426 @@
+###########################################################
+#---------------------------------------------------------#
+######### Lecture 3 code: lists and data frames ###########
+#---------------------------------------------------------#
+###########################################################
+
+# Clear everything in the workspace:
+rm(list=ls())
+
+###########################################################
+# Introduction:
+# Lists and data frames allow us to store and therefore analyse more complex
+# forms of data
+# 
+# In a list we can store objects of different types, e.g. numbers, text, vectors,
+# matrices, etc and they can have different lengths or dimensions
+# 
+# A data frame is more like a matrix, except that each column can have a
+# different type
+#
+# Technically, a list is a vector (which we've met already),
+# except that, unlike atomic vectors (which cannot be broken
+# down into smaller components), lists are
+# recursive vectors, which means, e.g., the first component of
+# my.list can be a single number, a character vector, a matrix,
+# a dataframe, another list... etc.!
+
+##################################
+# Creating a list
+##################################
+
+# Let's imagine we want to create an employee database
+
+# For each employee, we want to store their name,
+# their salary, and a Boolean indicating their membership of a union
+
+# A list is a perfect object to store these details of mixed type
+
+# Let's create the list:
+j <- list(name='Joe', salary=55000, union=T)
+
+# Now let's print it:
+j
+
+# Here, name, salary and union are optional tags (component names).
+# Without them the components would be named [[1]], [[2]], and [[3]]
+
+j2 <- list('Joe', 55000, T)
+j2
+
+# Accessing list components: (at least 3 different ways)
+# These return the object in the data type stored in it
+# (e.g., it returns a numeric vector if a numeric vector is stored there):
+j$salary
+j[['salary']]
+j[[2]]
+
+# If we don't use double square brackets, R returns another list
+# - a subset of the original list
+# This can be a little confusing:
+j['salary']
+j[2]
+j[1:2] # A list is really a (recursive) vector, so this is allowed
+
+# We can add new components after a list has been created:
+j$sales <- c(10400, 12300, 13700)
+j[[5]] <- 'Manager'
+j
+
+# We can delete components by setting it to NULL:
+j[[5]] <- NULL
+j
+
+# Since a list is a vector, length() gives the number of tags in the list.
+# (Note: this *doesn't* give the number of raw elements):
+length(j)
+length(j$sales)
+
+# Find names or structure of a list:
+names(j)
+str(j) # The structure str() function is very useful
+
+# The function unlist() will convert a list into
+# a vector using the mode of the lowest common
+# denominator (here, that is the character mode)
+unlist(j)
+mode(unlist(j))
+?unlist
+
+# By default R will give names to an unlisted object
+# taken from the tags. We can remove them via the
+# unname command or giving an extra argument:
+unname(unlist(j))
+unlist(j, use.names=FALSE)
+
+new.j <- unlist(j)
+names(new.j) <- NULL
+new.j
+
+##################################
+# The lapply function:
+##################################
+# The family of apply functions (which we first met for matrices) has a version
+# for lists known as lapply:
+
+# Use lapply on list (and return a list):
+list1 <- list(c(1, 2, 4, 5), c(21, 3, 56, 45, 31))
+list1
+lapply(list1, median)
+
+# Use sapply (simplified apply) to return a vector:
+sapply(list1, median)
+
+# Check the sum instead:
+lapply(list1, sum)
+sapply(list1, sum)
+
+# There’s nothing to stop you having a list within a list...
+list(a=1, b=2, c=list(d=5, e=9))
+
+#  ... or matrix in a list... etc.
+list(a=1, b=matrix(c(1,2,3,4), ncol=2, nrow=2))
+
+##################################
+# Example:
+##################################
+
+# You will use the lm() function in your class to fit a
+# linear model to variables x and y
+
+# The object returned from this function has lots of different parts
+# and lots of different sizes
+# It contains lists within lists too
+
+# Create a sequence x:
+x <- seq(-10, 10, length.out = 60)
+
+# Create y, dependent on x, with some 'noise'
+set.seed(13)
+y <- -1 + rnorm(60, x, 2)
+
+# Plot x against y:
+plot(x, y, pch = 16)
+
+# Fit a linear model to predict new values of y
+# from new values of x:
+lm(y ~ x)
+
+# Save this object:
+mod1 <- lm(y ~ x)
+str(mod1)
+
+# You can just access the parts you need:
+abline(mod1$coefficients[1], mod1$coefficients[2], col = "red", lwd = 2)
+
+##################################
+# Data Frames
+##################################
+
+# A data frame is just like a matrix,
+# except that each column can have a different mode
+
+# Technically, a dataframe is a list, with the restriction
+# that each component is an equal-length vector
+
+# Simple example:
+kids <- c('Jack', 'Jill')
+ages <- c(12, 10)
+
+d <- data.frame(kids, ages, stringsAsFactors = FALSE)
+d
+mode(d)
+str(d)
+
+# By default R will turn strings (kids) into factors which are another data
+# type. Setting stringsAsFactors = FALSE avoids this
+# We will cover factors later in the course
+
+# Accessing data frames:
+d[[2]]
+d$kids
+d$kids[1]
+
+##################################
+# Example:
+##################################
+
+# While R treats a data frame like a list,
+# it also allows us to extract and filter in
+# the same way as if it were a matrix
+
+# Load in the data frame airquality containing daily measurements
+# on air quality in New York in 1973
+# Read about it by running: ?airquality
+data(airquality)
+str(airquality)
+
+# Extract parts of it:
+airquality[1:3, ]
+
+# Select only the rows from June (month = 6):
+airquality[airquality$Month == 6, ]
+
+# Select days on which the Ozone was below 30:
+subset(airquality, Ozone < 30) # Note that airquality$Ozone is not needed here
+
+# Note that subset ignores NA values
+sum(is.na(airquality$Ozone))
+
+# Look at complete.cases - this function removes any rows with NA in them:
+airquality[complete.cases(airquality), ]
+
+# The rbind and cbind functions we met for matrices also work
+# for data frames, provided the dimensions match:
+
+# Creating new data frames with added data:
+airquality2 <- airquality[1:10, ]
+airquality3 <- cbind(airquality2, Label=letters[1:10], stringsAsFactors = FALSE)
+airquality4 <- rbind(airquality3, list(15, 300, 10, 70, 5, 21, 'u'))
+
+# We can attached new columns as functions of old columns:
+vec1 <- (airquality$Temp - 32) * (5/9)
+vec1
+
+# This looks a little messy. Let's use the round() function:
+vec1 <- round(vec1, 1)
+vec1
+
+# Attaching this to the data frame:
+airquality <- cbind(airquality, vec1)
+head(airquality)
+
+# The names() function is useful because the default names given by R
+# to the data frame columns can sometimes be a bit messy,
+# especially when created by combining other columns:
+names(airquality) <- c('Ozone','Solar.R','Wind','Temp.F', 'Month', 'Day', 'Temp.C')
+head(airquality)
+
+##################################
+# Extended example 1 - urine data with logistic regression:
+##################################
+
+# Logistic regression is a statistical method used to predict whether a binary
+# variable is 0 or 1 based on other explanatory variables
+# Look at the example on students passing exams on the Wikipedia page:
+# https://en.wikipedia.org/wiki/Logistic_regression
+
+# We will estimate the necessary parameters using the R function
+# glm() with the argument family = 'binomial'
+
+# Load the dataset urine (it's in the library called boot)
+library(boot)
+help(urine)
+str(urine)
+
+# From the above commands we can see that there are 7 columns, the first of
+# which (r) represents the binary response variable which is the presence
+# of certain type of crystals
+
+# The other columns represent potential explanatory variables
+
+# Write a function that fits a logistic regression model using each of
+# the remaining explanatory variables in turn
+logfun <- function(x) {
+  
+  # Fit a generalised linear model:
+  glm(urine$r ~ x, family=binomial)$coef
+
+}
+
+# Apply it to all columns:
+sapply(urine[,-1], logfun)
+# The top row here contains values of beta0 (the intercept),
+# while the second row contains values of beta1 (the slope)
+
+# Notice that one of the coefficients of x is negative, indicating that
+# as ph increases, the probability of the presence of crystals goes down
+
+# Example output (try this for other variables too):
+# Let’s see the relationship between calc and r in a plot:
+mod <- glm(urine$r ~ urine$calc, family=binomial)$coef
+
+plot(jitter(urine$calc), urine$r, col="red", pch = 16)
+
+points(sort(urine$calc), 1/(1 + exp(-(mod[1] + mod[2] * sort(urine$calc)))),
+       pch = 16, col="black", type="l", lwd=2)
+
+##################################
+# Extended example 2 - text concordance
+##################################
+# Suppose we had a block of text like the following:
+
+"It was the best of times, it was the worst of times, it was the age of wisdom,
+it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity,
+it was the season of Light, it was the season of Darkness, it was the spring of hope,
+it was the winter of despair, we had everything before us, we had nothing before us,
+we were all going direct to Heaven, we were all going direct the other way -
+in short, the period was so far like the present period,
+that some of its noisiest authorities insisted on its being received,
+for good or for evil, in the superlative degree of comparison only."
+
+# What is this from?
+
+# We're going to create a function which lists the different words used
+# and their position in the text
+# For example, 'It' is used in positions 1, 7, 13 etc.
+
+# To keep this simple, we'll first remove all the non-letter
+# characters and save them into a text object:
+firstpar <- 'It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way - in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only.'
+firstpar
+firstpar <- gsub(",", "", firstpar)
+firstpar <- gsub("\\.", "", firstpar)
+firstpar <- gsub("-", "", firstpar)
+firstpar <- gsub("  ", " ", firstpar)
+firstpar
+
+# A suitable function would be:
+findwords <- function(tf) {
+  
+  # Read in the words from the text and separate into a vector:
+  txt <- unlist(strsplit(tf,' '))
+  
+  # Turn this to lowercase:
+  txt <- tolower(txt)
+  
+  # Create an empty list to store the words and their positions
+  wl <- list()
+  
+  # Loop through each word
+  for(i in 1:length(txt)) {
+    
+    # Get the current word
+    wrd <- txt[i]
+    
+    # Add its position to the list with the appropriate tag
+    wl[[wrd]] <- c(wl[[wrd]], i)
+  }
+  
+  # Return the answer as a list
+  return(wl)
+}
+
+findwords(firstpar)
+words.list <- findwords(firstpar)
+
+# What about a function to sort text alphabetically?
+
+# Simple sort-alphabetically function
+alphawl <- function(wrdlst) {
+  
+  # Find the tags of the list:
+  nms <- names(wrdlst)
+  
+  # Sort them alphabetically:
+  sn <- sort(nms) 
+  
+  # Return them in this sorted order:
+  return(wrdlst[sn]) 
+}
+
+# Run this function:
+alphawl(words.list)
+
+# Or what if we want to sort by frequency?
+freqwl <- function(wrdlst) {
+  
+  # Find the frequency of each word:
+  freqs <- sapply(wrdlst,length)
+  
+  # Return them in order - add decreasing=T argument to change order:
+  return(wrdlst[order(freqs)])
+}
+
+freqwl(words.list)
+
+######################################################################################################
+# Extra reading:
+######################################################################################################
+##################################
+# Extended example 3 - merging dataframes
+##################################
+# It is very common to have two data frames that need to be
+# merged together in some way.
+# The R function for this is merge(x, y) where x
+# and y are two data frames with at least one common column name:
+
+d1 <- data.frame(kids=c('Jack', 'Jill', 'Jillian', 'John'),
+                 county=c('Dublin', 'Cork', 'Donegal', 'Kerry'))
+
+d2 <- data.frame(ages=c(10, 7, 12),
+                 kids=c('Jill', 'Lillian', 'Jack'))
+d1
+d2
+
+merge(d1, d2)
+# Note that this only allows *full* entries -
+# that is, where we have data for all columns
+
+# If we're happy with missing values, we could run:
+merge(d1, d2, all=TRUE)
+
+# Be careful matching with duplicates:
+d3 <- rbind(d2, list(15, 'Jill')) # d3 now contains two Jills
+d1
+d3
+
+merge(d1, d3)
+# The merge now thinks both Jills come from Cork
+
+##################################
+# lapply() on data frames:
+##################################
+
+# R treats data frames like a list, so calling
+# lapply() on a data frame with a function f() will
+# evaluate the function on each of the data frame’s columns,
+# with the return value given as a list
+
+# Using lapply on a data frame
+lapply(d, sort)
+
+# To get it back into a data frame, we could use:
+data.frame(lapply(d, sort))
+# This is not a very sensible result -
+# both were sorted separately, meaning the row structure has been broken
