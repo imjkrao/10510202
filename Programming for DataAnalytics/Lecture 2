@@ -1,0 +1,435 @@
+###########################################################
+#---------------------------------------------------------#
+##### Lecture 2 code: vectors, matrices and arrays ########
+#---------------------------------------------------------#
+###########################################################
+
+# Clear everything in the workspace:
+rm(list=ls())
+
+##################################
+# Creating numeric and character vectors:
+##################################
+
+x <- c(1, 2, 4)
+y <- c('Maths', 'History', 'Geography')
+
+# Use the mode() function to find out what type they are:
+mode(x)
+mode(y)
+
+# Add elements into an existing vector using c():
+x <- c(88, 5, 12, 13)
+x
+
+x <- c(x[1:3], 168, x[4])
+x
+
+# Delete an element from a vector:
+x <- x[-4]
+x
+
+# Declare a vector (not always necessary):
+y <- vector(length = 2)
+y[1] <- 5
+y[2] <- 12
+y
+
+# Vectorised addition:
+x <- c(1, 2, 4)
+y <- x + c(5, 0, -1)
+
+# Using indexing in order to subset vectors:
+y <- c(1.2, 3.9, 0.4, 0.12)
+y[c(1, 3)]
+v <- 3:4
+y[v]
+
+# Generating sequences using :
+6:11
+seq(from = 9, to = 27, by = 3)
+rep(7, 4)
+rep(4, 7)
+
+# Using the all() and any() functions:
+x <- 1:12
+any(x < 9)
+all(x < 9)
+x < 9
+
+# Introducing NA and NULL values:
+x <- c(88, NA, 12, 168, 13)
+x
+mean(x)
+
+# Introducing default arguments:
+mean(x, na.rm = TRUE)
+
+x <- c(88, NULL, 12, 168, 13)
+mean(x)
+length(x)
+
+# Why NULL can be helpful:
+z <- NULL
+for(i in 1:5) z <- c(z, i)
+z
+
+z <- NA
+for(i in 1:5) z <- c(z, i)
+z
+
+##################################
+# Vectorised operations:
+##################################
+
+# *Most* functions in R are vectorised, which can be really helpful 
+
+# Some simple vectorised operations
+u <- 1:5
+w <- function(x) return(x + 2)
+w(u)
+sqrt(1:4)
+(2:6)^2
+
+# Vectorisation and recycling:
+y <- c(12, 5, 13)
+y + 3
+
+# Watch out for the warning here:
+c(1, 2, 4) + c(6, 0, 9, 3, 10)
+
+##################################
+# Filtering and subsets:
+##################################
+
+# Filtering:
+z <- c(5, 2, -3, 8)
+w <- z[z^2 > 8]
+w
+z^2 > 8
+
+# Subset:
+x <- c(6, 1:3, 12)
+x
+x[x > 5]
+subset(x, x > 5)
+
+# which() returns the indexes:
+z <- c(5, 2, -3, 8)
+which(z^2 > 8)
+
+# Let's use this to filter z:
+z[which(z^2 > 8)]
+
+##################################
+# Like many programming languages, R has an if-then-else function called
+# ifelse. The format is:
+# ifelse(test, yes, no)
+# Here test is a logical statement, yes are the values to be supplied if the
+# statement is true and no the values to be supplied if the statement is false
+# e.g.: Using 'ifelse'
+##################################
+
+x <- 1:10
+y <- ifelse(x %% 2 == 0, "Even", "Odd")
+y
+
+# Understanding commands for filtering is really important
+# when creating fast R code
+# It can reduce a dependence on loops, and take advantage of R's
+# vectorised functions
+
+##################################
+# Matrices:
+##################################
+
+# A matrix is a rectangular arrangement of numbers. You can create one using
+# the matrix() function:
+
+# Creating and indexing:
+mat <- matrix(1:6, nrow = 3, ncol = 2)
+mat
+# This creates a matrix of the numbers 1 to 6 with 3 rows and 2 columns
+# Notice that by default the matrix is filled by column
+
+# If we want to fill by rows:
+mat2 <- matrix(1:6, nrow = 3, ncol = 2, byrow = TRUE)
+mat2
+
+# Matrices can be accessed in a similar way to vectors:
+mat[1, ]     # This accesses the first row of mat
+mat[, 2]     # This accesses the second column of mat
+
+# More complicated subsetting:
+mat2[c(1, 3), 1]
+mat2
+
+# R treats a matrix as though it’s really a vector, so that mat[3:5] is a
+# valid command
+
+# Run:
+attributes(mat)
+# to see what else is stored about mat
+
+# There are commands similar to the function c to add columns or rows to a
+# matrix, using the functions cbind and rbind
+mat3 <- cbind(mat, c(12, 13, 14))
+mat4 <- rbind(mat2, c(99, 100))
+
+##############################################
+# Matrix Operations:
+##############################################
+
+# We often need to perform linear algebra
+# operations such as matrix multiplication and addition
+# in order to perform statistical techniques such as linear regression
+
+# Matrix addition:
+mat3 <- matrix(7:12, 3, 2) # Note how the names of the arguments can be omitted
+mat2 + mat3
+
+# Matrix operations - matrix multiplication:
+t(mat) %*% mat
+
+# Matrix multiplication only works when the dimensions match (details on board)
+# R will complain if this is not the case:
+mat %*% mat2
+
+# Other operations, e.g. 2 * mat or mat2 + 3 occur element-wise
+2 * mat
+mat2 + 3
+
+# Other useful matrix functions for the future:
+I <- diag(2)
+M <- matrix(1:4,2,2)
+det(M)
+solve(M)
+solve(M) %*% M
+eigen(M)
+# See also chol, svd, qr if you like linear algebra
+
+##############################################
+# Apply:
+##############################################
+
+# The R function apply() allows you to perform functions on the rows or columns
+# of a matrix. It is a very useful function
+
+# The general structure of an apply command is:
+# apply(m, dimcode, f, function.args)
+# where:
+# m is a matrix,
+# dimcode is 1 for rows and 2 for columns,
+# f is a function and
+# function.args is a set of optional arguments that may be required by f
+
+# Use of apply
+apply(mat, 2, sum)
+# This applies the function sum() to the matrix mat and performs the operation on
+# each column
+
+# You can also give apply() your own created function:
+f <- function(x) x / sum(x)
+apply(mat2, 2, f)
+# Here the matrix mat2 has the function x / sum(x) applied to each of its columns
+
+# To apply to rows:
+apply(mat2, 1, f)
+
+# What's wrong with the above output?
+# An easy fix:
+t(apply(mat2, 1, f))
+
+# If the function returns a *vector*, then this is filled
+# into the output column-by-column
+# So if you apply by rows, you will need to transpose the result
+
+##############################################
+# A note on some differences between vectors and matrices:
+##############################################
+
+# Many vector commands still work on matrices:
+# Finding its size
+length(mat)
+
+# But as mat is a matrix it has other attributes, for example:
+dim(mat)
+# The dim function tells you the dimension, here mat has 3 rows and 2 columns
+# Similarly nrow(mat) and ncol(mat) will tell you directly how many rows and how
+# many columns mat has
+nrow(mat3)
+ncol(mat3)
+
+# Common problems:
+# We can extract a column (or a row) from a matrix via:
+r <- mat[2, ]
+r
+
+# Unfortunately r is not a matrix, it's a vector.
+# This can cause problems if we'd like to keep the matrix structure
+# The class() and str() functions show:
+class(mat)
+class(r)
+
+str(mat)
+str(r)
+
+# Two possible fixes:
+r2 <- mat[2, , drop = FALSE]
+str(r2)
+
+r2 <- as.matrix(mat[2,])
+str(r2)
+
+# (Note the difference above)
+
+##############################################
+# Column and Row names:
+##############################################
+
+# It is often helpful to give the rows or columns of a matrix some names:
+# Column and row names
+mat <- matrix(1:6, nrow = 3, ncol = 2)
+colnames(mat) <- c('a', 'b')
+rownames(mat) = c('c', 'd', 'e')
+mat
+
+# The functions rownames() and colnames() are also used to extract the names
+# from a matrix:
+rownames(mat)
+colnames(mat)
+
+##############################################
+# Arrays:
+##############################################
+
+# Almost all of the time, we will use vectors and matrices to analyse data
+# However, sometimes we need to work in higher dimensions, called arrays:
+
+# Suppose we take measurements on weight (in kg) and levels of iron
+# (in g/dL) on 3 people before and after a new weight-loss drug
+# The data might look as follows
+
+before <- matrix(c(92, 112, 86, 13, 14.2, 15.3), nrow = 3, ncol = 2)
+after <-  matrix(c(89, 110, 88, 13.4, 12.8, 15.2), nrow = 3, ncol = 2)
+
+# We can put them together via an array:
+A <- array(data = c(before, after), dim = c(3, 2, 2))
+
+# The array will now have three dimensions:
+dim(A)
+
+# Printing the data (type A) will show it layer by layer (and can often take up
+# lots of screen space as the dimensions sizes grow)
+
+# We can access and manipulate it in exactly the same way as for matrices
+# Indexing and finding shape:
+A[3, 1, 2]   # The third person's (3) weight (1) after the trial (2)
+dim(A)
+
+##################################
+# Example 1:
+##################################
+
+# Function to find the occurrences of a
+# particular number k in a vector x:
+find.k <- function(x, k) {
+  n <- length(x)
+  out <- NULL
+  for(i in 1:n) {
+    if(x[i] == k) out <- c(out, i)
+  }
+  return(out)
+}
+
+# Using the function
+y <- sample(1:5, 20, replace = TRUE)
+y
+find.k(y, 1)
+find.k(y, 2)
+find.k(y, 3)
+find.k(y, 7)
+
+##################################
+# Example 2 - image manipulation
+##################################
+
+# A common use for matrices is to store images
+
+# You can think of a black and white image as an n by m matrix where the
+# numbers in the matrix represent how white that pixel should be
+
+# The following code uses the package pixmap
+
+# The first time we use a package we have to install it:
+# Install the pixmap package:
+install.packages('pixmap')
+
+# Load the pixmap package
+library(pixmap)
+
+# Then we can use the function read.pnm included in the package pixmap to
+# create an image with R (in colour first)
+# (ppm is a file type, Portable PixMap)
+x <- read.pnm("blackbuck_antelope.pbm")
+plot(x)
+
+# Turn it to greyscale:
+y <- as(x, "pixmapGrey")
+plot(y)
+
+# Looking at the structure (str()) of y shows the matrix used to create the plot
+# Note: this package uses something called the S4 class which requires @ rather
+# than $ to access components
+str(y)
+
+# The grey component here stores the picture as numbers between 1 and 0.
+# We can access them in exactly the same way as a standard matrix
+# Look at the matrix:
+y@grey
+y@grey[1:10, 1:10]
+y@grey[300:305, 400:405]
+
+# By changing the elements of the matrix, it's possible to change the picture:
+# First, let's manipulate it:
+y2 <- y
+y2@grey <- 1 - y2@grey # Creates a negative
+plot(y2)
+
+y3 <- y
+y3@grey <- 0.8 * y3@grey # Makes it darker
+plot(y3)
+
+y4 <- y
+y4@grey[y4@grey<0.8] <- 0 # Makes dark areas black
+plot(y4)
+
+# See if you can find other fun ways to play with the
+# image by using apply or other functions we've met so far
+
+# Finally:
+# Combine all plots in a matrix with 2 rows and 3 columns
+# par is used to set or query graphical parameters
+# mfrow fills by row, a panel of images:
+par(mfrow = c(2, 3))
+
+plot(x, main = "x: Original")
+plot(y, main = "y: Original, greyscale")
+plot(y2, main = "y2: Negative")
+plot(y3, main = "y3: Darker")
+plot(y4, main = "y4: Dark areas black")
+
+par(mfrow = c(1, 1)) # reset to default
+
+
+##################################
+# Summary
+##################################
+
+# We now know how to create and manipulate vectors, matrices and arrays
+
+# We've met lots of new functions (e.g., apply, which, ifelse)
+
+# R vectorises operations which makes code run faster
+
+# We now how to install and load R packages
