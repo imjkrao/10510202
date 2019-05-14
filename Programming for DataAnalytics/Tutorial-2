@@ -49,7 +49,7 @@ print("(iv)")
 Z=6:5
 w=x+Z
 w
-Print("error was displayed as Z  was added to all elements of x")
+Print("error was not displayed as elements of Z  was added to all elements of x as count of Z<x")
 
 #-------#
 
