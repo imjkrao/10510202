@@ -1,0 +1,364 @@
+---
+title: "Assignment 1"
+author: "Jeevankrishna - 10510202"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r global_options, include=FALSE, cache=FALSE}
+library(knitr)
+opts_chunk$set(echo=TRUE, 
+               warning=FALSE, 
+               message=FALSE,
+               cache = FALSE,
+               include = TRUE,
+               results = 'show',
+               error = TRUE)
+```
+
+## Introduction:
+
+My answers to Assignment 1 for B9DA100 are found below.
+
+### Question 1:
+
+#### 1.1
+
+In 1.1, we need to load the carData package and load the `GSSvocab` dataset. The commands needed to do this are:
+
+```{r}
+library(carData)
+data(GSSvocab)
+```
+
+We also need to look at the top 6 rows of the dataset. The command needed to do this is:
+
+```{r}
+head(GSSvocab)
+```
+
+#### 1.2
+
+In 1.2, we need to access the description and structure of the dataset. The commands needed to do this are:
+
+```{r}
+
+?GSSvocab
+str(GSSvocab)
+```
+##### **Explanation**
+
+**From these commands, we can see that the data comes from National Opinion Research Center of the University of Chicago and contains subjects's score on a vocabulary test. This data set depicts analysis of a multifactor observational study where factors being age group, eduction level, natality status, gender and survey year.**
+
+#### 1.3
+In 1.3, we need to Print the 2,000th row of `GSSvocab`. What is the age of this person? The commands needed to do this are:
+```{r}
+GSSvocab[2000,]
+GSSvocab$age[2000]
+```
+
+**Age of Individual at 2000th row is 66**
+
+#### 1.4
+
+In 1.4, we need to Create a new column called `vocab.pct` which is the percentage of the number of words out of 10 correct on the vocabulary test.Print the head of GSSvocab to confirm that this column has attached correctly.The commands needed to do this are:
+```{r}
+GSSvocab$vocab.pct<- (GSSvocab$vocab/10)*100
+
+head(GSSvocab)
+ 
+```
+
+
+#### 1.5
+
+In 1.5, Two of the factors should be ordered factors. Use the help file to help you decide which two. Convert them to ordered factors, and check the structure again to confirm that this has worked.
+```{r}
+?GSSvocab
+GSSvocab$ageGroup=factor(GSSvocab$ageGroup,ordered = T)
+GSSvocab$educGroup=factor(GSSvocab$educGroup,ordered = T)
+str(GSSvocab$ageGroup)
+str(GSSvocab$educGroup)
+```
+
+#### 1.6
+
+In 1.6, we have to Create a table of educational group against age group.The commands needed to do this is:
+
+```{r}
+Edu_age=table(GSSvocab$educGroup,GSSvocab$ageGroup)
+Edu_age
+```
+
+Now to get the combination of Education Group/Age Group with the smallest number of people?
+
+```{r}
+DF_Edu_age=data.frame(Edu_age)
+colnames(DF_Edu_age)[1:3]=c("Edu Group","Age Group","Number.of.people")
+DF_Edu_age[which.min(DF_Edu_age[,"Number.of.people"]),]
+
+```
+**>16yrs and 18-29 is combination of Education group and Age group which has least number of people **
+
+#### 1.7
+
+Produce a clustered barchart of the table in the previous question. Explain in a few lines what the clustered barchart tells us about the relationship between the two variables.
+
+```{r}
+color.names=c("#39568CFF","#238A8DFF","#29AF7FFF","#95D840FF","#FDE725FF")
+barplot(Edu_age,beside = T,ylim=c(0,3000),xlab="Age Group",ylab="Number of People",col=color.names
+        ,main ="Number of People in Educational Group categorised by Age group")
+legend("top",legend=rownames(Edu_age),cex =0.8,title="Edu Group",bty="n",fill = color.names)
+```
+
+##### **Explanation**
+
+**Above Clustered barchart illutrates the total number of people that fall under various category of Educational group which is clustered/grouped by Age group of indivdual subject**
+
+**Total number of people are indicated on Y-axis, whereas X- axis indicates the Education group categorized by Age group .**
+**Each color in the Barplot represents the different education group.**
+**The above graph tell us,approximate 2300 people belongs to age grop 60+ and also having education group more than 12 years(<12 yrs).Whereas, age group 18-29 for education group '>16' holds less total number of people.**
+
+
+
+
+
+### Question 2:
+**The dataset diamonds is available in the R package called ggplot2.**
+
+#### 2.1
+
+Install and load the package ggplot2
+```{r}
+install.packages("ggplot2")
+
+```
+
+Load the dataset diamonds. Look at the structure and the top of the dataset.Briey describe the contents of the diamonds
+dataset. What kind of variables does it contain? How many observations are there?
+
+```{r}
+library(ggplot2)
+data("diamonds")
+str(diamonds)
+head(diamonds)
+
+```
+##### **Explanation**
+**Daimond is a dataset containing the prices and other attributes such as carat, cut,color,clarity,depth,table of each observation. In this dataset, 53940 observations are available with 10 variables. Data type of these variable being _Num_, _int_ and _Ordered factor_  .**
+
+#### 2.2
+
+Are there any missing values in the dataset? 
+
+```{r}
+anyNA(diamonds)
+```
+**There are no missing values in the dataset**
+
+#### 2.3
+
+Which row contains the diamond with a depth of 70? What colour is this diamond?
+
+```{r}
+which(diamonds$depth=="70")
+
+#To get color of diamond with depth value "70"
+diamonds[which(diamonds$depth=="70"),"color"]
+#alternatively
+diamonds$color[which(diamonds$depth=="70")]
+```
+**`J` is the color of the diamond with depth value=70**
+
+#### 2.4
+
+Use the summary() function on diamonds. Describe the results for any two of the
+variables.
+
+```{r}
+summary(diamonds)
+str(diamonds$cut)
+```
+
+
+##### **Explanation**
+
+**`Cut` and `Color` are 2 variable among 10 variable available in dataset.** 
+
++ `Cut` is an ordered factor, providing information on quality of cut in diamond from (Fair, Good, Very Good, Premium, Ideal)
+
++ `Color` is also an ordered factor, providing information on diamons color being worst to best. where D being best and J being worst. We have more number diamond that fall under "G" in color variable
+
+#### 2.5
+
+Create a table of color against cut.
+```{r}
+table(diamonds$color, diamonds$cut)
+```
+
+
+Write some code to find the colour/cut combination with the smallest number of diamonds.
+```{r}
+combination_df=data.frame(table(diamonds$color, diamonds$cut))
+colnames(combination_df)[1:3]=c("color","cut","count.of.Diamond")
+combination_df[which.min(combination_df[,"count.of.Diamond"]),]
+
+```
+**J and Fair are color and cut combination with the least number of diamonds**
+
+
+#### 2.6
+
+Using the table from the previous question, produce a table showing proportions (in-
+stead of counts) and marginal sums. Print this new table, and comment on it. 
+
+```{r}
+prop_table=prop.table(table(diamonds$color, diamonds$cut))
+margin.table(prop.table(table(diamonds$color, diamonds$cut)))
+print(prop_table)
+```
+
+###### **Comment**
+**Marginal sum of `prop_table` is 1 as count of diamond in each combination is divided by total number of observation.marginal sum of all the values in `prop_table` will be 1. but if we take proportion based on row-wise, Then marginal sum would be 7 as there are 7 rows in table. Similarly if we take proportion based on coloumn-wise, then marginal sum would be 5 as there are 5 coloumn in `prop_table`.**
+
+#### 2.7
+According to this dataset, what is the size (length, width and depth in mm) of the most expensive diamond?
+```{r}
+diamonds[which.max(diamonds$price),8:10]
+
+```
+
+#### 2.8
+
+Which are the 7 most expensive prices for diamonds of clarity IF
+```{r}
+# Subset of Diamond data set with clarity="IF"
+
+Clarity_IF=diamonds[(which(diamonds$clarity=="IF")),]
+#head(Clarity_IF)
+
+#Sorting prices list in decreasing order
+
+Expensive_7=sort(Clarity_IF$price,decreasing = T)
+
+# Displaying 7 most expensive prices 
+Expensive_7[1:7]
+```
+
+#### 2.9
+
+How many diamonds are of Ideal cut, best colour and best clarity?
+
+```{r}
+nrow(diamonds[which((diamonds$cut=="Ideal")&((diamonds$color=="D")&(diamonds$clarity=="IF"))),])
+
+
+```
+
+There are 28 Diamonds with Ideal cut, best color and better clarity.
+
+#### 2.10
+
+Create a new column called price.per.carat which contains the price of a diamond
+divided by its carat.
+
+```{r}
+diamonds$price.per.carat= diamonds$price/diamonds$carat
+head(diamonds)
+```
+
+#### 2.11
+
+Create a subset of diamonds called sub.diamonds which contains only those diamonds of cut Ideal. How many observations are there in sub.diamonds?
+
+```{r}
+sub.diamonds=subset(diamonds,diamonds$cut=="Ideal")
+#sub.diamonds=diamonds[which(diamonds$cut=="Ideal"),]
+nrow(sub.diamonds)
+```
+
+
+#### 2.12
+
+Use the aggregate() function to aggregate the price.per.carat column of sub.diamonds to find the mean of this variable for every clarity and color combination. Save this output as a dataframe called df1.
+
+```{r}
+df1= aggregate(sub.diamonds$price.per.carat,list(sub.diamonds$clarity,sub.diamonds$color),mean)
+colnames(df1)[1:3]= c( "Clarity", "Color", "Mean.price.per.carat")
+head(df1)
+```
+
+#### 2.13
+
+Order df1 by descending price per carat. Comment on the results.
+
+```{r}
+
+df1[order(-df1$Mean.price.per.carat,df1$Clarity,df1$Color),]
+
+```
+
+##### **Comment**
+
+**Above result give a quick insight on `Mean.price.per.carat` of diamond based on `Clarity` and `color`. As `df1` is ordered by descending value of `Price.per.carat`, we can observe that a diamond with highest price is in first row with `clarity` being `"IF"` which is better clarity and `Color` being `"D"` which is best in color.** 
+
+**Similarly, if we consider the last row of the table we can observe that `clarity` has value `"VVS1"` which is second best clarity of diamond in this data set and `color` being `"J"` which is worst color for diamond. Here`price.per.carat` is very less even with the good clarity.** 
+
+**Based on above price comparison, we can conclude that `price.per.carat` of a diamond increases with better `color` and with better `clarity`.**
+
+
+#### 2.14
+
+Be creative - produce an interesting table, a plot, or create a new variable which helps
+to tell us something new about the diamonds dataset. Describe your findings.
+
+```{r}
+require(ggplot2)
+
+#scatterplot for carat against price based on diamond's cut and color
+
+ggplot(diamonds[,],aes(x=carat,y=price))+geom_jitter(aes(color=color,shape=cut))+
+labs(title="comparison of carat with price based on diamond cut and color")
+
+```
+
+##### Findings
++ Price of Diamond is Low at carat value between 0 and 1. price Increases drastically for carat value more than 1.
++ we can observe shade of yellow(J-worst color) and purple(D-Best color) in all price range.
++ similarly, We can observe both Fair cut and ideal cut diamond with high price as well as low prices.
+
+
+```{r}
+#clustered barplot for Clarity against color of diamond 
+ggplot(diamonds,aes(x=clarity,fill=color))+geom_bar(position="dodge")+labs(title="clustered barplot for Clarity against color of diamond")
+
+
+
+```
+
+##### Findings
+
++ Here we have considered, Color and clarity of diamond data set. X- axis represent Clarity which is ordered factor and Y- axis provides information on count of diamonds that fall under particular category of clarity. Then this data is coupled with color attribute to obtain clustered bar plot.
++ we can observe that Number of diamonds in VS2 and SI1 are compartively higher than rest of the clarity category.
++ Likewise, Every clarity category from VS1 to IF has more number of diamonds with Color category of "G".
++ We can also observe that the diamond with good color and better Clarity is very less in number. it's same in the case of worst color and least clarity diamond too.
+
+
+```{r}
+# Used a data frame df1 from previous question. 
+ggplot(df1[],aes(x=Mean.price.per.carat,color=Color))+stat_bin(geom = "point",bins = 30, aes(size= Clarity))+labs(title="combination of clarity and color against price.per.carat of diamond")
+```
+
+##### Findings
+
+Here we have considered data frame which we created in previous question. 
+Where
++`df1$Group.1` represent Clarity in Diamond data set.
++`df1$Group.2` represent Color in diamond data set.
++`df1$x` represent mean of price.per.carat for the combination of clarity and color of diamond data set.
+
+we can observe number of diamond with clarity being "IF" and color being "D" is less than 2 and there more number of diamonds in other combination of color and clarity.
+
+Demand and supply being root for economic system, when there is less supply of diamond with better clarity and color, price of such diamond become directly proportional to demand in market. Based on above plot there is very few diamond with better clarity and color with price being more than $8000. So this says there is high demand for the dimond with clarity of "IF" and color of "D".
+ 
