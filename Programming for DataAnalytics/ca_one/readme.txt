@@ -1,3 +1,4 @@
 assignment one 
- submission.rmd
- solution
+Question FIle (*.pdf)
+ submission(.rmd & .html)
+ solution (.html)
